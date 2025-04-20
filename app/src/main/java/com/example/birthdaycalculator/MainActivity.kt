@@ -4,6 +4,8 @@ import android.content.SharedPreferences
 import android.graphics.Color
 import android.graphics.Paint
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
 import android.widget.Button
 import android.widget.NumberPicker
@@ -39,9 +41,18 @@ class MainActivity : AppCompatActivity() {
     )
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Set normal theme before creating activity
+        setTheme(R.style.Theme_BirthdayCalculator)
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
 
+        // Simulate splash screen delay (1.5 seconds)
+        Handler(Looper.getMainLooper()).postDelayed({
+            setContentView(R.layout.activity_main)
+            setupUI()
+        }, 1500)
+    }
+
+    private fun setupUI() {
         val monthPicker = findViewById<NumberPicker>(R.id.monthPicker)
         val dayPicker = findViewById<NumberPicker>(R.id.dayPicker)
         val btnCalculate = findViewById<Button>(R.id.btnCalculate)
@@ -98,25 +109,23 @@ class MainActivity : AppCompatActivity() {
             resultsContainer.visibility = View.VISIBLE
         }
 
-        // Show instructions on first launch (after splash screen)
+        // Show instructions on first launch
         showInstructionsIfFirstRun()
     }
 
     private fun showInstructionsIfFirstRun() {
-        val prefs: SharedPreferences = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
         if (prefs.getBoolean("first_run", true)) {
             val dialog = AlertDialog.Builder(this)
-                .setView(R.layout.dialog_instructions)  // Inflate directly
+                .setTitle("How to Use")
+                .setMessage("1. Select your birth month\n2. Choose your birth day\n3. Tap Calculate\n4. See your birthday countdown & fun facts!")
+                .setPositiveButton("Got It") { dialog, _ ->
+                    prefs.edit().putBoolean("first_run", false).apply()
+                    dialog.dismiss()
+                }
                 .setCancelable(false)
                 .create()
-
             dialog.show()
-
-            // Find view after dialog is shown
-            dialog.findViewById<Button>(R.id.btnGotIt)?.setOnClickListener {
-                prefs.edit().putBoolean("first_run", false).apply()
-                dialog.dismiss()
-            }
         }
     }
 
@@ -137,7 +146,6 @@ class MainActivity : AppCompatActivity() {
             set(Calendar.MONTH, month)
             set(Calendar.DAY_OF_MONTH, day)
 
-            // If birthday already passed this year, move to next year
             if (before(today) || equals(today)) {
                 add(Calendar.YEAR, 1)
             }
@@ -146,41 +154,40 @@ class MainActivity : AppCompatActivity() {
 
     private fun getSpecialFacts(month: Int, day: Int): String {
         return when (month) {
-            0 -> when (day) {  // January
+            0 -> when (day) {
                 1 -> "New Year baby! First to celebrate each year!"
                 in 20..31 -> "Aquarius season - innovative and humanitarian!"
                 else -> "Capricorn season - disciplined and practical!"
             }
-            1 -> when (day) {  // February
+            1 -> when (day) {
                 29 -> "Leap year baby! Official birthday Feb 28/Mar 1 in non-leap years"
                 in 14..20 -> "Valentine's week birthday!"
                 else -> "Shortest month but packed with holidays!"
             }
-            3 -> when (day) {  // April
+            3 -> when (day) {
                 22 -> "Earth Day birthday - nature lover!"
                 in 1..19 -> "Aries energy - bold and adventurous!"
                 else -> "Taurus season - reliable and sensual!"
             }
-            5 -> when (day) {  // June
+            5 -> when (day) {
                 21 -> "Summer solstice - longest day of the year!"
                 in 1..20 -> "Gemini season - social and curious!"
                 else -> "Cancer season - nurturing and intuitive!"
             }
-            9 -> when (day) {  // October
+            9 -> when (day) {
                 in 28..31 -> "Halloween birthday - spooky celebrations!"
                 in 23..27 -> "Scorpio season - intense and passionate!"
                 else -> "Libra season - balanced and harmonious!"
             }
-            11 -> when (day) {  // December
+            11 -> when (day) {
                 25 -> "Christmas birthday - double celebration!"
                 21 -> "Winter solstice - rebirth and new beginnings!"
                 else -> "Holiday season - festive birthday month!"
             }
-            else -> listOf(  // Random facts for other months
+            else -> listOf(
                 "Your birth month has ${when (month) { 3,5,8,10 -> 30 else -> 31 }} days!",
                 "Shared with ${listOf("famous inventors", "artists", "world leaders").random()}!",
-                "Perfect time for ${listOf("outdoor parties", "cozy gatherings", "travel adventures").random()}!",
-                "${listOf("Summer", "Winter", "Spring", "Fall").random()} birthdays have unique charms!"
+                "Perfect time for ${listOf("outdoor parties", "cozy gatherings", "travel adventures").random()}!"
             ).random()
         }
     }
