@@ -1,8 +1,15 @@
 <resources>
-    <!-- Base application theme -->
+    <!-- Main App Theme -->
     <style name="Theme.BirthdayCalculator" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/purple_500</item>
         <item name="colorPrimaryContainer">@color/purple_200</item>
         <item name="colorOnPrimary">@color/white</item>
+        <item name="android:windowBackground">@color/black</item>
+    </style>
+
+    <!-- Splash Screen Theme -->
+    <style name="SplashTheme" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@drawable/splash_screen</item>
+        <item name="android:windowFullscreen">true</item>
     </style>
 </resources>
