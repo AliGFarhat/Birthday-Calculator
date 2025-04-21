@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
         setTheme(R.style.Theme_BirthdayCalculator)
         super.onCreate(savedInstanceState)
 
-        // Simulate splash screen delay (1.5 seconds)
+        // Splash screen delay (1.5 seconds)
         Handler(Looper.getMainLooper()).postDelayed({
             setContentView(R.layout.activity_main)
             setupUI()
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
         setNumberPickerTextColor(dayPicker, Color.BLACK)
 
         btnCalculate.setOnClickListener {
-            val selectedMonth = monthPicker.value - 1  // Calendar months are 0-based
+            val selectedMonth = monthPicker.value - 1
             val selectedDay = dayPicker.value
 
             // Calculate days until next birthday
